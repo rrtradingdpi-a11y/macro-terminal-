@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AITOS Institutional Macro Terminal & Scanner</title>
+  <title>AITOS Dynamic Cycle Scanner — Live Levels</title>
   <style>
     :root {
       --bg: #090c10;
@@ -21,20 +21,13 @@
     body { background-color: var(--bg); color: var(--text); height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
 
     /* Top Command Header */
-    header {
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      padding: 6px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      flex-shrink: 0;
-    }
+    header { background: var(--panel); border-bottom: 1px solid var(--border); padding: 6px 10px; display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
     .header-top { display: flex; justify-content: space-between; align-items: center; }
     .brand { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 13px; letter-spacing: 0.5px; }
-    .badge-live { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid var(--green); font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+    .badge-live { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid var(--green); font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-    /* Navigation / View Controls */
+    /* Navigation */
     .view-toggle { display: flex; gap: 4px; background: #0c0f17; padding: 2px; border-radius: 6px; border: 1px solid var(--border); }
     .toggle-btn { background: transparent; border: none; color: var(--text-muted); font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
     .toggle-btn.active { background: #1e2638; color: #fff; }
@@ -47,48 +40,49 @@
     .workspace { display: flex; flex: 1; min-height: 0; position: relative; }
     .chart-container { flex: 1; height: 100%; position: relative; }
 
-    /* Sidebar / Inspection Area */
+    /* Sidebar */
     .sidebar { width: 340px; background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 10px; gap: 10px; overflow-y: auto; }
     .section-title { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; letter-spacing: 0.8px; margin-bottom: 5px; }
 
-    /* Execution Card (Entry / SL / TP) */
-    .exec-card { background: var(--panel-alt); border: 1px solid var(--border); border-radius: 7px; padding: 10px; }
+    /* Active Matrix Card */
+    .exec-card { background: var(--panel-alt); border: 1px solid var(--border); border-radius: 7px; padding: 10px; transition: border 0.3s; }
+    .exec-card.hit-tp { border-color: var(--green); }
+    .exec-card.hit-sl { border-color: var(--red); }
+    
     .exec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .order-type-badge { font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 4px; text-transform: uppercase; }
     .order-type-badge.buy { background: rgba(16, 185, 129, 0.2); color: var(--green); border: 1px solid var(--green); }
     .order-type-badge.sell { background: rgba(244, 63, 94, 0.2); color: var(--red); border: 1px solid var(--red); }
+
+    /* Flash Status */
+    .status-alert { font-size: 11px; font-weight: 700; padding: 6px; border-radius: 4px; text-align: center; margin-bottom: 8px; display: none; }
+    .status-alert.win { background: rgba(16, 185, 129, 0.2); color: var(--green); border: 1px solid var(--green); display: block; }
+    .status-alert.loss { background: rgba(244, 63, 94, 0.2); color: var(--red); border: 1px solid var(--red); display: block; }
 
     .param-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .param-box { background: #0c0f17; border: 1px solid #1a2234; padding: 6px 8px; border-radius: 5px; }
     .param-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
     .param-val { font-size: 13px; font-weight: 800; margin-top: 2px; }
 
+    /* Live Live Price Counter */
+    .live-tick-box { background: #0c0f17; border: 1px solid #1e2638; border-radius: 5px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; }
+
     /* Scanner Table */
-    .scanner-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 4px; }
+    .scanner-table { width: 100%; border-collapse: collapse; font-size: 11px; }
     .scanner-table th { text-align: left; color: var(--text-muted); font-size: 9px; padding: 4px 6px; border-bottom: 1px solid var(--border); }
     .scanner-table td { padding: 6px 6px; border-bottom: 1px solid #161e30; }
     .status-pill { font-size: 9px; padding: 2px 5px; border-radius: 3px; font-weight: 700; text-transform: uppercase; display: inline-block; }
     .pill-ready { background: rgba(16, 185, 129, 0.2); color: var(--green); }
     .pill-building { background: rgba(245, 158, 11, 0.2); color: var(--gold); }
-    .pill-watch { background: rgba(132, 146, 166, 0.2); color: var(--text-muted); }
-
-    /* Pipeline Items */
-    .stages { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
-    .stage-item { display: flex; justify-content: space-between; align-items: center; background: #0c0f17; padding: 6px 8px; border-radius: 4px; font-size: 11px; border-left: 3px solid #2d3748; }
-    .stage-item.done { border-left-color: var(--green); color: #fff; }
-    .stage-item.pending { border-left-color: var(--gold); color: #fbbf24; }
 
     .tape-container { height: 36px; border-top: 1px solid var(--border); background: var(--panel); flex-shrink: 0; }
 
-    /* Mobile Layout Adjustments */
     @media (max-width: 768px) {
       .workspace { flex-direction: column; overflow-y: auto; }
       .chart-container { flex: none; height: 50vh; width: 100%; }
       .sidebar { width: 100%; border-left: none; border-top: 1px solid var(--border); flex: 1; overflow-y: visible; }
-
       body.mode-chart .chart-container { height: 100%; }
       body.mode-chart .sidebar { display: none; }
-
       body.mode-scanner .chart-container { display: none; }
       body.mode-scanner .sidebar { display: flex; height: 100%; }
     }
@@ -100,7 +94,7 @@
   <header>
     <div class="header-top">
       <div class="brand">
-        <span>AITOS SCANNER OS</span>
+        <span>AITOS AUTOCYCLE OS</span>
         <span class="badge-live">● TICK STREAM</span>
       </div>
       <div class="view-toggle">
@@ -114,7 +108,6 @@
       <button class="tab-btn active" onclick="switchAsset('XAUUSD', this)">XAUUSD (Gold)</button>
       <button class="tab-btn" onclick="switchAsset('US30', this)">US30 (Dow 30)</button>
       <button class="tab-btn" onclick="switchAsset('BTCUSD', this)">BTCUSD</button>
-      <button class="tab-btn" onclick="switchAsset('EURUSD', this)">EURUSD</button>
     </div>
   </header>
 
@@ -123,93 +116,83 @@
     <!-- Chart Box -->
     <div class="chart-container" id="tv_chart_container"></div>
 
-    <!-- Scanner / Execution Sidebar -->
+    <!-- Real-Time Auto-Updating Sidebar -->
     <div class="sidebar">
-      
-      <!-- Live Entry, Stop Loss & Target Box -->
+
+      <!-- Live Tick Box -->
+      <div class="live-tick-box">
+        <div>
+          <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Real-Time Price:</span>
+          <b id="live_tick_price" style="font-size: 14px; margin-left: 6px; color:#fff;">--</b>
+        </div>
+        <div style="font-size: 10px; color: var(--green); font-weight: 700;">STREAMING</div>
+      </div>
+
+      <!-- Hit Notice Alert (Hidden until TP/SL Hit) -->
+      <div id="hit_alert_box" class="status-alert"></div>
+
+      <!-- Active Execution Box -->
       <div>
-        <div class="section-title">Institutional Execution Matrix</div>
-        <div class="exec-card">
+        <div class="section-title">Active Setup Matrix</div>
+        <div class="exec-card" id="exec_card_wrapper">
           <div class="exec-header">
             <div>
               <span id="active_symbol_label" style="font-size: 13px; font-weight: 800;">XAUUSD</span>
-              <span style="font-size: 10px; color: var(--text-muted); margin-left: 4px;" id="active_timeframe">M5 Execution</span>
+              <span style="font-size: 10px; color: var(--text-muted); margin-left: 4px;" id="cycle_count_label">Cycle #1</span>
             </div>
-            <span class="order-type-badge buy" id="exec_type_badge">BUY LIMIT / MITIGATION</span>
+            <span class="order-type-badge buy" id="exec_type_badge">BUY LIMIT</span>
           </div>
 
           <div class="param-grid">
             <div class="param-box">
               <div class="param-label">Entry Level</div>
-              <div class="param-val" id="val_entry" style="color: var(--accent);">4,162.80</div>
+              <div class="param-val" id="val_entry" style="color: var(--accent);">--</div>
             </div>
             <div class="param-box">
-              <div class="param-label">Stop Loss (OB Base)</div>
-              <div class="param-val" id="val_sl" style="color: var(--red);">4,151.20</div>
+              <div class="param-label">Stop Loss</div>
+              <div class="param-val" id="val_sl" style="color: var(--red);">--</div>
             </div>
             <div class="param-box">
-              <div class="param-label">Target 1 (1:2 RR)</div>
-              <div class="param-val" id="val_tp1" style="color: var(--green);">4,186.00</div>
+              <div class="param-label">Target 1 (TP1)</div>
+              <div class="param-val" id="val_tp1" style="color: var(--green);">--</div>
             </div>
             <div class="param-box">
-              <div class="param-label">Target 2 (Liquidity)</div>
-              <div class="param-val" id="val_tp2" style="color: var(--green);">4,198.50</div>
+              <div class="param-label">Target 2 (TP2)</div>
+              <div class="param-val" id="val_tp2" style="color: var(--green);">--</div>
             </div>
           </div>
-          
+
           <div style="margin-top: 8px; font-size: 10px; color: var(--text-muted); display: flex; justify-content: space-between;">
             <span>Risk / Reward: <b style="color:#fff;" id="val_rr">1 : 2.5</b></span>
-            <span>Stop Buffer: <b style="color:#fff;" id="val_sl_points">11.6 pts</b></span>
+            <span>Status: <b style="color:var(--green);" id="val_status">ARMED</b></span>
           </div>
         </div>
       </div>
 
-      <!-- Live Multi-Asset SMC Scanner Table -->
+      <!-- Scanner Table -->
       <div>
-        <div class="section-title">Institutional SMC Scanner</div>
+        <div class="section-title">Institutional Scanner Overview</div>
         <div class="exec-card" style="padding: 6px;">
           <table class="scanner-table">
             <thead>
               <tr>
                 <th>Symbol</th>
-                <th>Setup Bias</th>
+                <th>Setup</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody id="scanner_body">
-              <!-- Rendered via JS -->
-            </tbody>
+            <tbody id="scanner_body"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- 5-Stage Early Signal Pipeline -->
+      <!-- Action Simulation (For Testing Cycle Resets Instantly) -->
       <div>
-        <div class="section-title">Signal Pipeline Verification</div>
-        <div class="exec-card">
-          <div class="stages">
-            <div class="stage-item done">
-              <span>01. Session Liquidity Sweep</span>
-              <span style="font-weight:700; color:var(--green);" id="pipe_step1">CONFIRMED</span>
-            </div>
-            <div class="stage-item done">
-              <span>02. M5 CHOCH (Market Structure)</span>
-              <span style="font-weight:700; color:var(--green);" id="pipe_step2">CONFIRMED</span>
-            </div>
-            <div class="stage-item pending">
-              <span>03. FVG Retest / Mitigation Block</span>
-              <span style="font-weight:700; color:var(--gold);" id="pipe_step3">IN RANGE</span>
-            </div>
-            <div class="stage-item done">
-              <span>04. Spread & Volatility Check</span>
-              <span style="font-weight:700; color:var(--green);" id="pipe_step4">PASSED</span>
-            </div>
-            <div class="stage-item done">
-              <span>05. Hard Risk Gate Clear</span>
-              <span style="font-weight:700; color:var(--green);" id="pipe_step5">ARMORED</span>
-            </div>
-          </div>
+        <div class="section-title">Manual State Simulator</div>
+        <div style="display:flex; gap:6px;">
+          <button onclick="simulateHit('TP')" style="flex:1; background:rgba(16,185,129,0.2); border:1px solid var(--green); color:var(--green); font-size:10px; font-weight:800; padding:6px; border-radius:4px; cursor:pointer;">FORCE TP HIT</button>
+          <button onclick="simulateHit('SL')" style="flex:1; background:rgba(244,63,94,0.2); border:1px solid var(--red); color:var(--red); font-size:10px; font-weight:800; padding:6px; border-radius:4px; cursor:pointer;">FORCE SL HIT</button>
         </div>
       </div>
 
@@ -225,8 +208,7 @@
         "symbols": [
           {"proName": "OANDA:XAUUSD", "title": "Gold"},
           {"proName": "FX:US30", "title": "US30"},
-          {"proName": "BINANCE:BTCUSDT", "title": "Bitcoin"},
-          {"proName": "TVC:DXY", "title": "DXY"}
+          {"proName": "BINANCE:BTCUSDT", "title": "Bitcoin"}
         ],
         "showSymbolLogo": true,
         "isTransparent": true,
@@ -238,125 +220,196 @@
     </div>
   </div>
 
-  <!-- Chart and Scanner Engine Script -->
+  <!-- TradingView Chart & State Machine Engine -->
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script type="text/javascript">
-    // Institutional Scanner Data Models
-    const scannerDatabase = {
+    const stateDatabase = {
       XAUUSD: {
         tvSymbol: "OANDA:XAUUSD",
-        name: "Gold / USD",
+        digits: 2,
+        currentPrice: 4165.20,
+        cycle: 1,
         type: "BUY",
         entry: 4162.80,
         sl: 4151.20,
-        tp1: 4186.00,
+        tp1: 4185.00,
         tp2: 4198.50,
-        stage: "ENTRY READY",
-        pillClass: "pill-ready",
-        bias: "Bullish (SSL Swept)",
         rr: "1 : 2.5",
-        slPts: "11.60 pts"
+        status: "ARMED",
+        bias: "Bullish (SSL Swept)"
       },
       US30: {
         tvSymbol: "FX:US30",
-        name: "Dow Jones 30",
+        digits: 1,
+        currentPrice: 51970.0,
+        cycle: 1,
         type: "SELL",
-        entry: 51920.00,
-        sl: 52040.00,
-        tp1: 51680.00,
-        tp2: 51450.00,
-        stage: "BUILDING",
-        pillClass: "pill-building",
-        bias: "Bearish (BSL Swept)",
+        entry: 51950.0,
+        sl: 52080.0,
+        tp1: 51690.0,
+        tp2: 51480.0,
         rr: "1 : 2.8",
-        slPts: "120 pts"
+        status: "ARMED",
+        bias: "Bearish (BSL Swept)"
       },
       BTCUSD: {
         tvSymbol: "BINANCE:BTCUSDT",
-        name: "Bitcoin / USD",
+        digits: 1,
+        currentPrice: 81440.0,
+        cycle: 1,
         type: "BUY",
-        entry: 81220.00,
-        sl: 80650.00,
-        tp1: 82500.00,
-        tp2: 83800.00,
-        stage: "BUILDING",
-        pillClass: "pill-building",
-        bias: "Bullish (Discount FVG)",
+        entry: 81250.0,
+        sl: 80600.0,
+        tp1: 82550.0,
+        tp2: 83800.0,
         rr: "1 : 2.2",
-        slPts: "570 pts"
-      },
-      EURUSD: {
-        tvSymbol: "FX:EURUSD",
-        name: "Euro / Dollar",
-        type: "SELL",
-        entry: 1.0885,
-        sl: 1.0910,
-        tp1: 1.0835,
-        tp2: 1.0800,
-        stage: "WATCH",
-        pillClass: "pill-watch",
-        bias: "Bearish (Premium)",
-        rr: "1 : 2.0",
-        slPts: "25 pips"
+        status: "ARMED",
+        bias: "Bullish (Discount FVG)"
       }
     };
 
     let activeKey = "XAUUSD";
 
-    function renderScannerTable() {
-      const tbody = document.getElementById('scanner_body');
-      tbody.innerHTML = '';
+    // --- State Machine: Calculate Next Levels upon Hit ---
+    function advanceToNextLevel(key, hitType) {
+      const asset = stateDatabase[key];
+      asset.cycle += 1;
 
-      for (const [key, data] of Object.entries(scannerDatabase)) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><b>${key}</b></td>
-          <td style="color:${data.type === 'BUY' ? 'var(--green)' : 'var(--red)'}; font-weight:700;">${data.bias}</td>
-          <td><span class="status-pill ${data.pillClass}">${data.stage}</span></td>
-          <td><button onclick="selectFromScanner('${key}')" style="background:#1e2638; border:1px solid #2e3b55; color:#fff; font-size:9px; padding:2px 6px; border-radius:3px; cursor:pointer;">SELECT</button></td>
-        `;
-        tbody.appendChild(tr);
+      const alertBox = document.getElementById('hit_alert_box');
+      const card = document.getElementById('exec_card_wrapper');
+
+      if (hitType === 'TP') {
+        alertBox.className = 'status-alert win';
+        alertBox.innerText = `🎯 TARGET HIT! Cycle #${asset.cycle - 1} Closed with Profit. Calculating Next Setup...`;
+        card.classList.add('hit-tp');
+      } else {
+        alertBox.className = 'status-alert loss';
+        alertBox.innerText = `🛑 STOP LOSS HIT! Cycle #${asset.cycle - 1} Managed by Risk Gate. Re-anchoring...`;
+        card.classList.add('hit-sl');
+      }
+
+      setTimeout(() => {
+        alertBox.style.display = 'none';
+        card.classList.remove('hit-tp', 'hit-sl');
+      }, 4000);
+
+      // Algorithmic Level Shift
+      const p = asset.currentPrice;
+      if (asset.type === "BUY") {
+        if (hitType === "TP") {
+          // Trend continuation buy on higher pullback
+          asset.entry = round(p - (p * 0.0025), asset.digits);
+          asset.sl = round(asset.entry - (p * 0.0030), asset.digits);
+          asset.tp1 = round(asset.entry + (p * 0.0060), asset.digits);
+          asset.tp2 = round(asset.entry + (p * 0.0090), asset.digits);
+          asset.bias = "Bullish Continuation";
+        } else {
+          // Flip to Sell on structure failure
+          asset.type = "SELL";
+          asset.entry = round(p + (p * 0.0020), asset.digits);
+          asset.sl = round(asset.entry + (p * 0.0030), asset.digits);
+          asset.tp1 = round(asset.entry - (p * 0.0060), asset.digits);
+          asset.tp2 = round(asset.entry - (p * 0.0090), asset.digits);
+          asset.bias = "Bearish Breakout (CHOCH)";
+        }
+      } else {
+        if (hitType === "TP") {
+          // Trend continuation sell on lower retracement
+          asset.entry = round(p + (p * 0.0025), asset.digits);
+          asset.sl = round(asset.entry + (p * 0.0030), asset.digits);
+          asset.tp1 = round(asset.entry - (p * 0.0060), asset.digits);
+          asset.tp2 = round(asset.entry - (p * 0.0090), asset.digits);
+          asset.bias = "Bearish Continuation";
+        } else {
+          // Flip to Buy on stop out
+          asset.type = "BUY";
+          asset.entry = round(p - (p * 0.0020), asset.digits);
+          asset.sl = round(asset.entry - (p * 0.0030), asset.digits);
+          asset.tp1 = round(asset.entry + (p * 0.0060), asset.digits);
+          asset.tp2 = round(asset.entry + (p * 0.0090), asset.digits);
+          asset.bias = "Bullish Reversal (Liquidity Reclaim)";
+        }
+      }
+
+      asset.status = "ARMED";
+      if (activeKey === key) updateUI();
+      renderScannerTable();
+    }
+
+    function round(num, digits) {
+      return Number(Math.round(num + 'e' + digits) + 'e-' + digits);
+    }
+
+    // --- Price Tick Inspection Engine ---
+    function inspectPriceTicks(key, newPrice) {
+      const asset = stateDatabase[key];
+      asset.currentPrice = newPrice;
+
+      if (activeKey === key) {
+        document.getElementById('live_tick_price').innerText = newPrice.toLocaleString(undefined, {minimumFractionDigits: asset.digits});
+      }
+
+      // Check Buy Setup
+      if (asset.type === "BUY" && asset.status === "ARMED") {
+        if (newPrice >= asset.tp1) {
+          advanceToNextLevel(key, 'TP');
+        } else if (newPrice <= asset.sl) {
+          advanceToNextLevel(key, 'SL');
+        }
+      }
+      // Check Sell Setup
+      else if (asset.type === "SELL" && asset.status === "ARMED") {
+        if (newPrice <= asset.tp1) {
+          advanceToNextLevel(key, 'TP');
+        } else if (newPrice >= asset.sl) {
+          advanceToNextLevel(key, 'SL');
+        }
       }
     }
 
-    function updateExecutionMatrix(key) {
-      const data = scannerDatabase[key];
-      activeKey = key;
+    function simulateHit(type) {
+      advanceToNextLevel(activeKey, type);
+    }
 
-      document.getElementById('active_symbol_label').innerText = key;
+    function updateUI() {
+      const data = stateDatabase[activeKey];
+      document.getElementById('active_symbol_label').innerText = activeKey;
+      document.getElementById('cycle_count_label').innerText = "Cycle #" + data.cycle;
       document.getElementById('val_entry').innerText = data.entry.toLocaleString();
       document.getElementById('val_sl').innerText = data.sl.toLocaleString();
       document.getElementById('val_tp1').innerText = data.tp1.toLocaleString();
       document.getElementById('val_tp2').innerText = data.tp2.toLocaleString();
       document.getElementById('val_rr').innerText = data.rr;
-      document.getElementById('val_sl_points').innerText = data.slPts;
+      document.getElementById('val_status').innerText = data.status;
 
       const badge = document.getElementById('exec_type_badge');
-      badge.innerText = data.type + " SETUP / " + data.stage;
+      badge.innerText = data.type + " / " + data.bias;
       badge.className = 'order-type-badge ' + (data.type === 'BUY' ? 'buy' : 'sell');
     }
 
-    function switchAsset(key, btnElement) {
-      if (btnElement) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        btnElement.classList.add('active');
+    function renderScannerTable() {
+      const tbody = document.getElementById('scanner_body');
+      tbody.innerHTML = '';
+      for (const [key, data] of Object.entries(stateDatabase)) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><b>${key}</b></td>
+          <td style="color:${data.type === 'BUY' ? 'var(--green)' : 'var(--red)'}; font-weight:700;">${data.type} (#${data.cycle})</td>
+          <td><span class="status-pill pill-ready">${data.status}</span></td>
+          <td><button onclick="switchAsset('${key}')" style="background:#1e2638; border:1px solid #2e3b55; color:#fff; font-size:9px; padding:2px 6px; border-radius:3px; cursor:pointer;">VIEW</button></td>
+        `;
+        tbody.appendChild(tr);
       }
-      updateExecutionMatrix(key);
-      loadChart(scannerDatabase[key].tvSymbol);
     }
 
-    function selectFromScanner(key) {
-      // Find button matching key
+    function switchAsset(key, btnElement) {
+      activeKey = key;
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        if (btn.innerText.includes(key)) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
+        btn.classList.toggle('active', btn.innerText.includes(key));
       });
-      switchAsset(key, null);
+      updateUI();
+      loadChart(stateDatabase[key].tvSymbol);
       if (window.innerWidth <= 768) {
-        // Return to split or chart view automatically on selection
         setViewMode('split', document.querySelectorAll('.toggle-btn')[1]);
       }
     }
@@ -375,11 +428,7 @@
         "enable_publishing": false,
         "allow_symbol_change": true,
         "container_id": "tv_chart_container",
-        "hide_side_toolbar": true,
-        "withdateranges": false,
-        "details": false,
-        "hotlist": false,
-        "calendar": false
+        "hide_side_toolbar": true
       });
     }
 
@@ -390,10 +439,31 @@
       window.dispatchEvent(new Event('resize'));
     }
 
+    // Direct High-Frequency Tick Simulators to Feed State Engine
+    setInterval(() => {
+      // Simulate real micro fluctuations on Gold & US30
+      const goldShift = (Math.random() - 0.49) * 0.6;
+      inspectPriceTicks("XAUUSD", round(stateDatabase.XAUUSD.currentPrice + goldShift, 2));
+
+      const us30Shift = (Math.random() - 0.49) * 4.0;
+      inspectPriceTicks("US30", round(stateDatabase.US30.currentPrice + us30Shift, 1));
+    }, 1200);
+
+    // Direct Public WebSocket for Real Live BTCUSD Ticks
+    try {
+      const btcWs = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
+      btcWs.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg && msg.p) {
+          inspectPriceTicks("BTCUSD", round(parseFloat(msg.p), 1));
+        }
+      };
+    } catch(e) {}
+
     window.addEventListener('DOMContentLoaded', () => {
       renderScannerTable();
-      updateExecutionMatrix('XAUUSD');
-      loadChart(scannerDatabase['XAUUSD'].tvSymbol);
+      updateUI();
+      loadChart(stateDatabase['XAUUSD'].tvSymbol);
     });
   </script>
 </body>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AITOS Macro Flow Terminal — XAUUSD & US30 Live</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #11151f;
+      --border: #1e2538;
+      --accent: #2962ff;
+      --green: #00e676;
+      --red: #ff3d71;
+      --text: #e2e8f0;
+      --text-muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* Top Command Header */
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; letter-spacing: 0.5px; font-size: 15px; }
+    .badge-live { background: rgba(0, 230, 118, 0.15); color: var(--green); border: 1px solid var(--green); font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+    
+    .ticker-tabs { display: flex; gap: 6px; }
+    .tab-btn {
+      background: #181f2f;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .tab-btn:hover:not(.active) { color: #fff; border-color: #3b4766; }
+
+    /* Layout Structure */
+    .workspace { display: flex; flex: 1; min-height: 0; }
+    .chart-container { flex: 1; height: 100%; position: relative; }
+
+    /* Right Inspection Sidebar */
+    .sidebar {
+      width: 330px;
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      gap: 14px;
+      overflow-y: auto;
+    }
+    .section-title { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.8px; margin-bottom: 6px; }
+
+    /* Early Signal Pipeline Cards */
+    .pipeline-card { background: #161b29; border: 1px solid var(--border); border-radius: 6px; padding: 10px; }
+    .stages { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+    .stage-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #0d111a; padding: 8px 10px; border-radius: 4px; font-size: 12px;
+      border-left: 3px solid #2d3748;
+    }
+    .stage-item.done { border-left-color: var(--green); color: #fff; }
+    .stage-item.pending { border-left-color: #f59e0b; color: #fbbf24; }
+    .stage-item .status { font-weight: 600; font-size: 10px; text-transform: uppercase; }
+
+    /* Risk Gates */
+    .gate-row { display: flex; justify-content: space-between; font-size: 12px; padding: 5px 0; border-bottom: 1px solid #1a2234; }
+    .gate-row span:first-child { color: var(--text-muted); }
+    .gate-row span:last-child { font-weight: 600; color: var(--green); }
+
+    /* Tape at Bottom */
+    .tape-container { height: 44px; border-top: 1px solid var(--border); background: var(--panel); overflow: hidden; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header with Pair Switcher -->
+  <header>
+    <div class="brand">
+      <span>AITOS MACRO OS</span>
+      <span class="badge-live">● TICK STREAM ACTIVE</span>
+    </div>
+
+    <div class="ticker-tabs">
+      <button class="tab-btn active" onclick="loadChart('OANDA:XAUUSD', this)">XAUUSD (Gold)</button>
+      <button class="tab-btn" onclick="loadChart('FX:US30', this)">US30 (Dow Jones)</button>
+      <button class="tab-btn" onclick="loadChart('BINANCE:BTCUSDT', this)">BTCUSD</button>
+      <button class="tab-btn" onclick="loadChart('FX:EURUSD', this)">EURUSD</button>
+    </div>
+  </header>
+
+  <!-- Main Trading Area -->
+  <div class="workspace">
+    <!-- Chart Box -->
+    <div class="chart-container" id="tv_chart_container"></div>
+
+    <!-- Live Execution & Risk Sidebar -->
+    <div class="sidebar">
+      <div>
+        <div class="section-title">Institutional Pipeline</div>
+        <div class="pipeline-card">
+          <div style="font-size: 13px; font-weight: 700;" id="pipeline_pair">XAUUSD Intraday Setup</div>
+          <div class="stages">
+            <div class="stage-item done">
+              <span>01. Session Sweep (Asia High/Low)</span>
+              <span class="status" style="color: var(--green);">Confirmed</span>
+            </div>
+            <div class="stage-item done">
+              <span>02. M5 CHOCH (Market Structure)</span>
+              <span class="status" style="color: var(--green);">Confirmed</span>
+            </div>
+            <div class="stage-item pending">
+              <span>03. FVG Retest / Mitigation Block</span>
+              <span class="status" style="color: #fbbf24;">Waiting Tap</span>
+            </div>
+            <div class="stage-item">
+              <span>04. Spread & Volatility Check</span>
+              <span class="status" style="color: var(--text-muted);">Queued</span>
+            </div>
+            <div class="stage-item">
+              <span>05. Hard Risk Gate Clear</span>
+              <span class="status" style="color: var(--text-muted);">Locked</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title">Hard Risk Gates</div>
+        <div class="pipeline-card">
+          <div class="gate-row">
+            <span>Daily Loss Limit Cap</span>
+            <span>Pass (-0.4% / 3.0%)</span>
+          </div>
+          <div class="gate-row">
+            <span>Consecutive Loss Breaker</span>
+            <span>0 / 2 (Armored)</span>
+          </div>
+          <div class="gate-row">
+            <span>News Blackout Filter</span>
+            <span>Cleared (No CPI/NFP)</span>
+          </div>
+          <div class="gate-row">
+            <span>Live Spread Filter</span>
+            <span>Pass (Normal)</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title">Macro Sentiment Indicators</div>
+        <div class="pipeline-card" style="font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div><span style="color:var(--text-muted)">DXY (Dollar):</span> <b>Bearish Bias</b></div>
+          <div><span style="color:var(--text-muted)">US 10Y Yield:</span> <b>Down -0.8%</b></div>
+          <div><span style="color:var(--text-muted)">India VIX:</span> <b>14.20 Normal</b></div>
+          <div><span style="color:var(--text-muted)">US Session:</span> <b>London / NY</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Market Ticker Tape -->
+  <div class="tape-container">
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+      {
+        "symbols": [
+          {"proName": "OANDA:XAUUSD", "title": "Gold"},
+          {"proName": "FX:US30", "title": "US30"},
+          {"proName": "BINANCE:BTCUSDT", "title": "Bitcoin"},
+          {"proName": "TVC:DXY", "title": "DXY Index"},
+          {"proName": "TVC:US10Y", "title": "US 10Y Yield"}
+        ],
+        "showSymbolLogo": true,
+        "isTransparent": true,
+        "displayMode": "adaptive",
+        "colorTheme": "dark",
+        "locale": "en"
+      }
+      </script>
+    </div>
+  </div>
+
+  <!-- TradingView Chart Loader -->
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script type="text/javascript">
+    let currentWidget = null;
+
+    function loadChart(symbol, btnElement) {
+      if (btnElement) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+        document.getElementById('pipeline_pair').innerText = symbol.split(':')[1] + " Intraday Setup";
+      }
+
+      document.getElementById('tv_chart_container').innerHTML = '';
+
+      new TradingView.widget({
+        "autosize": true,
+        "symbol": symbol,
+        "interval": "5",
+        "timezone": "Asia/Kolkata",
+        "theme": "dark",
+        "style": "1",
+        "locale": "en",
+        "toolbar_bg": "#11151f",
+        "enable_publishing": false,
+        "allow_symbol_change": true,
+        "container_id": "tv_chart_container",
+        "hide_side_toolbar": false,
+        "withdateranges": true,
+        "details": true,
+        "hotlist": false,
+        "calendar": false
+      });
+    }
+
+    // Initialize with Gold (XAUUSD) on load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadChart('OANDA:XAUUSD', null);
+    });
+  </script>
+</body>
+</html>

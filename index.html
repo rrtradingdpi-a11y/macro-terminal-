@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AITOS Dynamic Cycle Scanner — Live Levels</title>
+  <title>AITOS Dynamic Cycle Scanner & Institutional Horizons</title>
   <style>
     :root {
       --bg: #090c10;
@@ -14,6 +14,7 @@
       --green: #10b981;
       --red: #f43f5e;
       --gold: #f59e0b;
+      --purple: #8b5cf6;
       --text: #f1f5f9;
       --text-muted: #8492a6;
     }
@@ -41,10 +42,10 @@
     .chart-container { flex: 1; height: 100%; position: relative; }
 
     /* Sidebar */
-    .sidebar { width: 340px; background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 10px; gap: 10px; overflow-y: auto; }
+    .sidebar { width: 350px; background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 10px; gap: 10px; overflow-y: auto; }
     .section-title { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; letter-spacing: 0.8px; margin-bottom: 5px; }
 
-    /* Active Matrix Card */
+    /* Cards */
     .exec-card { background: var(--panel-alt); border: 1px solid var(--border); border-radius: 7px; padding: 10px; transition: border 0.3s; }
     .exec-card.hit-tp { border-color: var(--green); }
     .exec-card.hit-sl { border-color: var(--red); }
@@ -67,19 +68,29 @@
     /* Live Live Price Counter */
     .live-tick-box { background: #0c0f17; border: 1px solid #1e2638; border-radius: 5px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; }
 
+    /* Macro Horizons Cards */
+    .horizon-box { background: #0c0f17; border: 1px solid #1a2234; border-radius: 6px; padding: 8px; margin-bottom: 6px; }
+    .horizon-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .horizon-title { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #cbd5e1; }
+    .horizon-badge { font-size: 8px; font-weight: 800; padding: 2px 5px; border-radius: 3px; text-transform: uppercase; }
+    .horizon-badge.secured { background: rgba(16, 185, 129, 0.2); color: var(--green); border: 1px solid var(--green); }
+    .horizon-badge.testing { background: rgba(245, 158, 11, 0.2); color: var(--gold); border: 1px solid var(--gold); }
+    .horizon-badge.breached { background: rgba(244, 63, 94, 0.2); color: var(--red); border: 1px solid var(--red); }
+    .horizon-text { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
+    .horizon-text b { color: #f1f5f9; }
+
     /* Scanner Table */
     .scanner-table { width: 100%; border-collapse: collapse; font-size: 11px; }
     .scanner-table th { text-align: left; color: var(--text-muted); font-size: 9px; padding: 4px 6px; border-bottom: 1px solid var(--border); }
     .scanner-table td { padding: 6px 6px; border-bottom: 1px solid #161e30; }
     .status-pill { font-size: 9px; padding: 2px 5px; border-radius: 3px; font-weight: 700; text-transform: uppercase; display: inline-block; }
     .pill-ready { background: rgba(16, 185, 129, 0.2); color: var(--green); }
-    .pill-building { background: rgba(245, 158, 11, 0.2); color: var(--gold); }
 
     .tape-container { height: 36px; border-top: 1px solid var(--border); background: var(--panel); flex-shrink: 0; }
 
     @media (max-width: 768px) {
       .workspace { flex-direction: column; overflow-y: auto; }
-      .chart-container { flex: none; height: 50vh; width: 100%; }
+      .chart-container { flex: none; height: 48vh; width: 100%; }
       .sidebar { width: 100%; border-left: none; border-top: 1px solid var(--border); flex: 1; overflow-y: visible; }
       body.mode-chart .chart-container { height: 100%; }
       body.mode-chart .sidebar { display: none; }
@@ -94,7 +105,7 @@
   <header>
     <div class="header-top">
       <div class="brand">
-        <span>AITOS AUTOCYCLE OS</span>
+        <span>AITOS MACRO OS</span>
         <span class="badge-live">● TICK STREAM</span>
       </div>
       <div class="view-toggle">
@@ -169,6 +180,42 @@
         </div>
       </div>
 
+      <!-- Institutional Macro Horizons (Weekly & Monthly Levels) -->
+      <div>
+        <div class="section-title">Institutional Macro Horizons</div>
+        <div class="exec-card" style="padding: 8px;">
+
+          <!-- Weekly Horizon -->
+          <div class="horizon-box">
+            <div class="horizon-head">
+              <span class="horizon-title">WEEKLY CLOSE HORIZON</span>
+              <span class="horizon-badge secured" id="weekly_badge">SECURED</span>
+            </div>
+            <div style="font-size: 10px; font-weight: 700; color: #38bdf8; margin-bottom: 2px;">
+              CHANNEL BASELINE RECOVERY (<span id="hz_weekly_price">4,120.00</span>)
+            </div>
+            <div class="horizon-text">
+              Closing Friday above <b id="hz_weekly_val">4,120.00</b> locks in a weekly higher-low candle from the 200 EMA, confirming the mid-October bull cycle restart.
+            </div>
+          </div>
+
+          <!-- Monthly Horizon -->
+          <div class="horizon-box" style="margin-bottom:0;">
+            <div class="horizon-head">
+              <span class="horizon-title">MONTHLY HORIZON (30D)</span>
+              <span class="horizon-badge secured" id="monthly_badge">+ SECURED</span>
+            </div>
+            <div style="font-size: 10px; font-weight: 700; color: #a78bfa; margin-bottom: 2px;">
+              FINAL SECULAR BASELINE (<span id="hz_monthly_price">4,045.00</span>)
+            </div>
+            <div class="horizon-text">
+              Double-bottom defense across the 200-day EMA (<b id="hz_monthly_val">4,045.00</b>) establishes the absolute springboard for a multi-month leg toward <b id="hz_target_val">4,380.00+</b>.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       <!-- Scanner Table -->
       <div>
         <div class="section-title">Institutional Scanner Overview</div>
@@ -236,7 +283,10 @@
         tp2: 4198.50,
         rr: "1 : 2.5",
         status: "ARMED",
-        bias: "Bullish (SSL Swept)"
+        bias: "Bullish (SSL Swept)",
+        weeklyHorizon: 4120.00,
+        monthlyHorizon: 4045.00,
+        secularTarget: "4,380.00+"
       },
       US30: {
         tvSymbol: "FX:US30",
@@ -250,5 +300,243 @@
         tp2: 51480.0,
         rr: "1 : 2.8",
         status: "ARMED",
-        bias: "Bearish (BSL Swept)"
+        bias: "Bearish (BSL Swept)",
+        weeklyHorizon: 51450.0,
+        monthlyHorizon: 50800.0,
+        secularTarget: "53,500.0+"
       },
+      BTCUSD: {
+        tvSymbol: "BINANCE:BTCUSDT",
+        digits: 1,
+        currentPrice: 81440.0,
+        cycle: 1,
+        type: "BUY",
+        entry: 81250.0,
+        sl: 80600.0,
+        tp1: 82550.0,
+        tp2: 83800.0,
+        rr: "1 : 2.2",
+        status: "ARMED",
+        bias: "Bullish (Discount FVG)",
+        weeklyHorizon: 78500.0,
+        monthlyHorizon: 74200.0,
+        secularTarget: "95,000.0+"
+      }
+    };
+
+    let activeKey = "XAUUSD";
+
+    function advanceToNextLevel(key, hitType) {
+      const asset = stateDatabase[key];
+      asset.cycle += 1;
+
+      const alertBox = document.getElementById('hit_alert_box');
+      const card = document.getElementById('exec_card_wrapper');
+
+      if (hitType === 'TP') {
+        alertBox.className = 'status-alert win';
+        alertBox.innerText = `🎯 TARGET HIT! Cycle #${asset.cycle - 1} Closed with Profit. Calculating Next Setup...`;
+        card.classList.add('hit-tp');
+      } else {
+        alertBox.className = 'status-alert loss';
+        alertBox.innerText = `🛑 STOP LOSS HIT! Cycle #${asset.cycle - 1} Managed by Risk Gate. Re-anchoring...`;
+        card.classList.add('hit-sl');
+      }
+
+      setTimeout(() => {
+        alertBox.style.display = 'none';
+        card.classList.remove('hit-tp', 'hit-sl');
+      }, 4000);
+
+      const p = asset.currentPrice;
+      if (asset.type === "BUY") {
+        if (hitType === "TP") {
+          asset.entry = round(p - (p * 0.0025), asset.digits);
+          asset.sl = round(asset.entry - (p * 0.0030), asset.digits);
+          asset.tp1 = round(asset.entry + (p * 0.0060), asset.digits);
+          asset.tp2 = round(asset.entry + (p * 0.0090), asset.digits);
+          asset.bias = "Bullish Continuation";
+        } else {
+          asset.type = "SELL";
+          asset.entry = round(p + (p * 0.0020), asset.digits);
+          asset.sl = round(asset.entry + (p * 0.0030), asset.digits);
+          asset.tp1 = round(asset.entry - (p * 0.0060), asset.digits);
+          asset.tp2 = round(asset.entry - (p * 0.0090), asset.digits);
+          asset.bias = "Bearish Breakout (CHOCH)";
+        }
+      } else {
+        if (hitType === "TP") {
+          asset.entry = round(p + (p * 0.0025), asset.digits);
+          asset.sl = round(asset.entry + (p * 0.0030), asset.digits);
+          asset.tp1 = round(asset.entry - (p * 0.0060), asset.digits);
+          asset.tp2 = round(asset.entry - (p * 0.0090), asset.digits);
+          asset.bias = "Bearish Continuation";
+        } else {
+          asset.type = "BUY";
+          asset.entry = round(p - (p * 0.0020), asset.digits);
+          asset.sl = round(asset.entry - (p * 0.0030), asset.digits);
+          asset.tp1 = round(asset.entry + (p * 0.0060), asset.digits);
+          asset.tp2 = round(asset.entry + (p * 0.0090), asset.digits);
+          asset.bias = "Bullish Reversal (Liquidity Reclaim)";
+        }
+      }
+
+      asset.status = "ARMED";
+      if (activeKey === key) updateUI();
+      renderScannerTable();
+    }
+
+    function round(num, digits) {
+      return Number(Math.round(num + 'e' + digits) + 'e-' + digits);
+    }
+
+    function inspectPriceTicks(key, newPrice) {
+      const asset = stateDatabase[key];
+      asset.currentPrice = newPrice;
+
+      if (activeKey === key) {
+        document.getElementById('live_tick_price').innerText = newPrice.toLocaleString(undefined, {minimumFractionDigits: asset.digits});
+        updateHorizonsLive(asset, newPrice);
+      }
+
+      if (asset.type === "BUY" && asset.status === "ARMED") {
+        if (newPrice >= asset.tp1) advanceToNextLevel(key, 'TP');
+        else if (newPrice <= asset.sl) advanceToNextLevel(key, 'SL');
+      } else if (asset.type === "SELL" && asset.status === "ARMED") {
+        if (newPrice <= asset.tp1) advanceToNextLevel(key, 'TP');
+        else if (newPrice >= asset.sl) advanceToNextLevel(key, 'SL');
+      }
+    }
+
+    function updateHorizonsLive(asset, currentPrice) {
+      const wBadge = document.getElementById('weekly_badge');
+      const mBadge = document.getElementById('monthly_badge');
+
+      // Weekly Horizon Check
+      if (currentPrice >= asset.weeklyHorizon) {
+        wBadge.className = 'horizon-badge secured';
+        wBadge.innerText = 'SECURED';
+      } else {
+        wBadge.className = 'horizon-badge testing';
+        wBadge.innerText = 'TESTING BASELINE';
+      }
+
+      // Monthly Horizon Check
+      if (currentPrice >= asset.monthlyHorizon) {
+        mBadge.className = 'horizon-badge secured';
+        mBadge.innerText = '+ SECURED';
+      } else {
+        mBadge.className = 'horizon-badge breached';
+        mBadge.innerText = 'DEFENSE BREACHED';
+      }
+    }
+
+    function simulateHit(type) {
+      advanceToNextLevel(activeKey, type);
+    }
+
+    function updateUI() {
+      const data = stateDatabase[activeKey];
+      document.getElementById('active_symbol_label').innerText = activeKey;
+      document.getElementById('cycle_count_label').innerText = "Cycle #" + data.cycle;
+      document.getElementById('val_entry').innerText = data.entry.toLocaleString();
+      document.getElementById('val_sl').innerText = data.sl.toLocaleString();
+      document.getElementById('val_tp1').innerText = data.tp1.toLocaleString();
+      document.getElementById('val_tp2').innerText = data.tp2.toLocaleString();
+      document.getElementById('val_rr').innerText = data.rr;
+      document.getElementById('val_status').innerText = data.status;
+
+      // Populate Horizon Numbers
+      document.getElementById('hz_weekly_price').innerText = data.weeklyHorizon.toLocaleString();
+      document.getElementById('hz_weekly_val').innerText = data.weeklyHorizon.toLocaleString();
+      document.getElementById('hz_monthly_price').innerText = data.monthlyHorizon.toLocaleString();
+      document.getElementById('hz_monthly_val').innerText = data.monthlyHorizon.toLocaleString();
+      document.getElementById('hz_target_val').innerText = data.secularTarget;
+
+      const badge = document.getElementById('exec_type_badge');
+      badge.innerText = data.type + " / " + data.bias;
+      badge.className = 'order-type-badge ' + (data.type === 'BUY' ? 'buy' : 'sell');
+
+      updateHorizonsLive(data, data.currentPrice);
+    }
+
+    function renderScannerTable() {
+      const tbody = document.getElementById('scanner_body');
+      tbody.innerHTML = '';
+      for (const [key, data] of Object.entries(stateDatabase)) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><b>${key}</b></td>
+          <td style="color:${data.type === 'BUY' ? 'var(--green)' : 'var(--red)'}; font-weight:700;">${data.type} (#${data.cycle})</td>
+          <td><span class="status-pill pill-ready">${data.status}</span></td>
+          <td><button onclick="switchAsset('${key}')" style="background:#1e2638; border:1px solid #2e3b55; color:#fff; font-size:9px; padding:2px 6px; border-radius:3px; cursor:pointer;">VIEW</button></td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function switchAsset(key, btnElement) {
+      activeKey = key;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.innerText.includes(key));
+      });
+      updateUI();
+      loadChart(stateDatabase[key].tvSymbol);
+      if (window.innerWidth <= 768) {
+        setViewMode('split', document.querySelectorAll('.toggle-btn')[1]);
+      }
+    }
+
+    function loadChart(symbol) {
+      document.getElementById('tv_chart_container').innerHTML = '';
+      new TradingView.widget({
+        "autosize": true,
+        "symbol": symbol,
+        "interval": "5",
+        "timezone": "Asia/Kolkata",
+        "theme": "dark",
+        "style": "1",
+        "locale": "en",
+        "toolbar_bg": "#11151f",
+        "enable_publishing": false,
+        "allow_symbol_change": true,
+        "container_id": "tv_chart_container",
+        "hide_side_toolbar": true
+      });
+    }
+
+    function setViewMode(mode, btn) {
+      document.body.className = 'mode-' + mode;
+      document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      window.dispatchEvent(new Event('resize'));
+    }
+
+    // Direct High-Frequency Tick Simulators
+    setInterval(() => {
+      const goldShift = (Math.random() - 0.49) * 0.6;
+      inspectPriceTicks("XAUUSD", round(stateDatabase.XAUUSD.currentPrice + goldShift, 2));
+
+      const us30Shift = (Math.random() - 0.49) * 4.0;
+      inspectPriceTicks("US30", round(stateDatabase.US30.currentPrice + us30Shift, 1));
+    }, 1200);
+
+    // Direct Public WebSocket for Real Live BTCUSD Ticks
+    try {
+      const btcWs = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
+      btcWs.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg && msg.p) {
+          inspectPriceTicks("BTCUSD", round(parseFloat(msg.p), 1));
+        }
+      };
+    } catch(e) {}
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderScannerTable();
+      updateUI();
+      loadChart(stateDatabase['XAUUSD'].tvSymbol);
+    });
+  </script>
+</body>
+</html>
